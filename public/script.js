@@ -28,9 +28,9 @@ navigator.mediaDevices.getUserMedia({
         video.setAttribute("class","video")
         video2.setAttribute("class","video")
 
-        call.on('stream', (userVideoStream, userScreenStream) => {
-          addVideoStream(video, userVideoStream)
-          addVideoStream(video2, userScreenStream)
+        call.on('stream', userStream => {
+          addVideoStream(video, userStream.userVideoStream)
+          addVideoStream(video2, userStream.userScreenStream)
         })
       })
 
@@ -63,15 +63,15 @@ myPeer.on('open', id => {
 })
 
 function connectToNewUser(userId, sstream, vstream) {
-  const call = myPeer.call(userId, sstream, vstream)
+  const call = myPeer.call(userId, {sstream, vstream})
   const video = document.createElement('video')
   const video2 = document.createElement('video')
   video.setAttribute("class","video")
   video2.setAttribute("class","video")
 
-  call.on('stream', (userVideoStream, userScreenStream) => {
-    addVideoStream(video, userVideoStream)
-    addVideoStream(video2, userScreenStream)
+  call.on('stream', userStream => {
+    addVideoStream(video, userStream.userVideoStream)
+    addVideoStream(video2, userStream.userScreenStream)
   })
   call.on('close', () => {
     video.remove()
