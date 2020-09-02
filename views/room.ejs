@@ -32,25 +32,28 @@
     <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
     <script src="script.js" defer></script>
     <style>
+      *{
+        margin:0;
+      }
       #video-grid {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
       }
-      .screen {
+      .video {
         height: 100vh;
         width: 100vw;
         object-fit: cover;
         padding: 8px;
       }
-      .video {
+      .screen {
         z-index: 2;
         position: absolute;
         bottom: 2px;
         right: 2px;
-        height: 300px;
-        /* width: 200px; */
-        /* object-fit: cover; */
+        height: 200px;
+        width: 200px;
+        object-fit: cover;
         padding: 2px;
       }
     </style>
