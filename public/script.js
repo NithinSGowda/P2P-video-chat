@@ -6,7 +6,7 @@ const myPeer = new Peer(undefined, {
 let myVideoStream;
 const myVideo = document.createElement('video')
 myVideo.setAttribute("class","col-6")
-myVideo.muted = true;
+myVideo.muted = false;
 const peers = {}
 
 window.mobileAndTabletCheck = function() {
