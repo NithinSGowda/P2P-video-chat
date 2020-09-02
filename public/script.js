@@ -5,9 +5,10 @@ const myPeer = new Peer(undefined, {
 })
 let myVideoStream;
 const myVideo = document.createElement('video')
+myVideo.setAttribute("class","screen")
 myVideo.muted = true;
 const peers = {}
-navigator.mediaDevices.getUserMedia({
+navigator.mediaDevices.getDisplayMedia({
   video: true,
   audio: true
 }).then(stream => {
