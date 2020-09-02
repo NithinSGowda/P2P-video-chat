@@ -37,16 +37,27 @@
         justify-content: center;
         flex-wrap: wrap;
       }
-      video {
-        height: 300px;
-        width: 400px;
+      .screen {
+        height: 100vh;
+        width: 100vw;
         object-fit: cover;
         padding: 8px;
+      }
+      .video {
+        z-index: 2;
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        height: 200px;
+        width: 200px;
+        object-fit: cover;
+        padding: 2px;
       }
     </style>
   </head>
   <body>
-    <div class="main">
+    <div id="video-grid"></div>
+    <!-- <div class="main">
       <div class="main__left">
         <div class="main__videos">
           <div id="video-grid"></div>
@@ -104,6 +115,6 @@
           />
         </div>
       </div>
-    </div>
+    </div> -->
   </body>
 </html>
