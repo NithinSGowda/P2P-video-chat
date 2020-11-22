@@ -5,54 +5,49 @@ const myVideo = document.createElement('video')
 myVideo.muted = true
 const peers = {}
 
-document.querySelector('.fac').addEventListener("click",()=>{
-  document.querySelector('.ask').style.display='none'
+var pathArray = window.location.pathname.split('/');
+type=pathArray[2]
+
+if(type=="screen"){
   navigator.mediaDevices.getDisplayMedia({
     video: true,
     audio: true
   }).then(stream => {
-    addVideoStream(myVideo, {stream: stream,screen:true})
-  
+    addVideoStream(myVideo, stream)
+
     myPeer.on('call', call => {
-      console.log("line 17");
-      call.answer(stream, {stream: stream,screen:true})
+      call.answer(stream)
       const video = document.createElement('video')
-      call.on('stream', (userVideoStream, obj) => {
-        console.log("line 20", userVideoStream.metadata);
-        addVideoStream(video, {stream: userVideoStream.stream,screen: userVideoStream.screen})
+      call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
       })
     })
-  
+
     socket.on('user-connected', userId => {
-      connectToNewUser(userId, {stream: stream,screen:true})
+      connectToNewUser(userId, stream)
     })
   })
-})
-
-document.querySelector('.stu').addEventListener("click",()=>{
-  document.querySelector('.ask').style.display='none'
+}
+if(type=="video"){
   navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
   }).then(stream => {
-    addVideoStream(myVideo, {stream: stream,screen:false})
-  
+    addVideoStream(myVideo, stream)
+
     myPeer.on('call', call => {
-      console.log("line 41");
-      call.answer(stream, {stream: stream,screen:false})
+      call.answer(stream)
       const video = document.createElement('video')
-      call.on('stream', (userVideoStream, obj) => {
-        console.log("line 44", userVideoStream.metadata);
-        addVideoStream(video, {stream: userVideoStream, screen:userVideoStream.screen})
+      call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
       })
     })
-  
+
     socket.on('user-connected', userId => {
-      connectToNewUser(userId, {stream: stream,screen:false})
+      connectToNewUser(userId, stream)
     })
   })
-})
-
+}
 
 socket.on('user-disconnected', userId => {
   if (peers[userId]) peers[userId].close()
@@ -62,13 +57,11 @@ myPeer.on('open', id => {
   socket.emit('join-room', ROOM_ID, id)
 })
 
-function connectToNewUser(userId, nstream) {
-  console.log("line 66", nstream);
-  const call = myPeer.call(userId, nstream.stream, nstream)
+function connectToNewUser(userId, stream) {
+  const call = myPeer.call(userId, stream)
   const video = document.createElement('video')
-  call.on('stream', (userVideoStream, obj) => {
-    console.log("line 68", userVideoStream.metadata);
-    addVideoStream(video, {stream: userVideoStream, screen:userVideoStream.screen})
+  call.on('stream', userVideoStream => {
+    addVideoStream(video, userVideoStream)
   })
   call.on('close', () => {
     video.remove()
@@ -78,10 +71,7 @@ function connectToNewUser(userId, nstream) {
 }
 
 function addVideoStream(video, stream) {
-  video.srcObject = stream.stream
-  if(stream.screen){
-    video.setAttribute("class","screen")
-  }
+  video.srcObject = stream
   video.addEventListener('loadedmetadata', () => {
     video.play()
   })

@@ -7,12 +7,25 @@ const { v4: uuidV4 } = require('uuid')
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-  res.redirect(`/${uuidV4()}`)
+app.get('/screen', (req, res) => {
+  res.redirect(`/${uuidV4()}/screen`)
+})
+app.get('/video', (req, res) => {
+  res.redirect(`/${uuidV4()}/video`)
 })
 
-app.get('/:room', (req, res) => {
+app.get('/:room/screen', (req, res) => {
   res.render('room', { roomId: req.params.room })
+})
+app.get('/:room/video', (req, res) => {
+  res.render('room', { roomId: req.params.room })
+})
+
+app.get('/', (req, res) => {
+  res.render('landingPage',{roomId: false})
+})
+app.get('/:room', (req, res) => {
+  res.render('landingPage',{roomId: req.params.room})
 })
 
 io.on('connection', socket => {
@@ -26,4 +39,4 @@ io.on('connection', socket => {
   })
 })
 
-server.listen(process.env.PORT||3000)
+server.listen(process.env.PORT||8080)
