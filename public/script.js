@@ -7,28 +7,37 @@ const peers = {}
 
 var pathArray = window.location.pathname.split('/');
 type=pathArray[2]
+stream=null
 
 if(type=="screen"){
   navigator.mediaDevices.getDisplayMedia({
-    video: true,
-    audio: true
+    video: {
+      cursor: "always"
+    },
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+    }
   }).then(stream => {
     addVideoStream(myVideo, stream)
-
+    console.log(stream)
     myPeer.on('call', call => {
+      console.log("call event");
       call.answer(stream)
       const video = document.createElement('video')
       call.on('stream', userVideoStream => {
+        console.log("stream event");
         addVideoStream(video, userVideoStream)
       })
     })
 
     socket.on('user-connected', userId => {
+      console.log("connect in screen");
       connectToNewUser(userId, stream)
     })
   })
 }
-if(type=="video"){
+else if(type=="video"){
   navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -36,9 +45,11 @@ if(type=="video"){
     addVideoStream(myVideo, stream)
 
     myPeer.on('call', call => {
+      console.log("call event video");
       call.answer(stream)
       const video = document.createElement('video')
       call.on('stream', userVideoStream => {
+        console.log("stream event video");
         addVideoStream(video, userVideoStream)
       })
     })
@@ -58,6 +69,7 @@ myPeer.on('open', id => {
 })
 
 function connectToNewUser(userId, stream) {
+  console.log("connnect event",userId);
   const call = myPeer.call(userId, stream)
   const video = document.createElement('video')
   call.on('stream', userVideoStream => {
