@@ -1,0 +1,50 @@
+.bg-black-dark,.card{
+    background-color: #87556f;
+}
+.card{
+    padding: 30px;
+}
+.bg-black{
+    background-color:#000 !important;
+}
+
+.bg-dark{
+    background-color:#181a1b !important;
+
+}
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input {
+flex: 1;
+border: none !important  ;
+background: #ffff !important;
+width: 100%;
+padding: 0 ;
+color: #87556f !important;
+overflow: hidden;
+height: 45px !important;
+}
+
+input:focus {
+color: #87556f !important;
+background-color: #fff !important;
+outline: none;
+box-shadow: none;
+border-color:#87556f;
+border: none !important  ;
+} 
+
+input:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
+  border-color: #322f3d !important;
+  box-shadow: 0 0px 0px rgba(229, 103, 23, 0.075) inset, 0 0 0px #87556f !important;
+  outline: 0 none !important;
+}
+
+.text-lg{
+  font-size: 18px;
+}

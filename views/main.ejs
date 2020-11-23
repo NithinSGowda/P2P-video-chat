@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AselPanda</title>
+    <script>
+      const ROOM_ID = '<%= roomId %>';
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script src="/socket.io/socket.io.js" defer></script>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
+    <script src="/script.js" defer></script>
+
+    <style>
+      input {
+        flex: 1;
+        border: none !important  ;
+        background: #fff !important;
+        width: 100%;
+        padding: 0 ;
+        color: #343a40 !important;
+        overflow: hidden;
+        height: 45px !important;
+        }
+
+        input:focus {
+        color: #343a40 !important;
+        background-color: #fff !important;
+        outline: none;
+        box-shadow: none;
+        border-color:#fff;
+        border: none !important  ;
+        } 
+
+        input:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
+          border-color: #322f3d !important;
+          box-shadow: 0 0px 0px rgba(229, 103, 23, 0.075) inset, 0 0 0px #87556f !important;
+          outline: 0 none !important;
+        }
+
+        .other-users-video .single-user .card-img:fullscreen{
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .other-users-video{
+        z-index: 999;
+        position: absolute;
+        width: 250px;
+        right: 10px;
+        overflow-y: auto;
+        height: auto !important;
+        }
+
+    </style>
+  </head>
+
+  <body>
+
+    <div id="cpy-link-model" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered " role="document">
+        <div class="modal-content  rounded bg-dark">
+          <div class="modal-header text-white">
+            <h5 class="modal-title ">Share link</h5>
+            <button id="close-model-btn" 
+            type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class=" expand-btn text-white p-4 modal-body">
+            <p>You can share this link, to helps other join your room too.</p>
+            <label for="">Shareable Link</label>
+            <input id="shareable-cpy-link" type="text" class="form-control-lg form-control">
+            <div class="w-100 text-center">
+              <button id="cpy-text-btn" class="btn btn-outline-light text-center mx-0 mt-3">Copy to clipboard</button>
+
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+    
+      <div class="container-fluid" >
+          <div class="row" style="height: 100vh;">
+              <div class="col-md-9 video-block bg-black">
+                <div class="mt-3 ml-1 ">
+                  <video id="my-video" class="main-video  bg-dark ">
+
+                  </video>
+
+                  <div class="video-container">
+                    <div class="video    py-2 w-100">
+                      
+                      <div style="height: auto !important" id="other-users-video" class="other-users-video d-flex flex-column">
+
+                  
+
+                        <!-- <div class="card single-user  text-white">
+                          <div class="card-img bg-black-dark"></div>
+                          <div class="card-img-overlay">
+                            <h5 class="card-title">User</h5>
+                            <div class="show-view mt-5 ">
+                              <div class="btn option-btn  rounded-circle ">
+                                <i class="fa fa fa-expand"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div> -->
+
+                        
+                      </div>
+                    </div>
+                  </div> 
+
+
+                    <div class="p-4 video-options w-100 ">
+                        <div class="d-flex justify-content-center align-items-center">
+                          <div id="expand-main" class="btn option-btn  rounded-circle ">
+                            <i class="fa fa fa-expand"></i>
+                          </div>
+                          <div id="cpy-link-btn" class="btn option-btn  rounded-circle ">
+                            <i class="fa fa fa-clone"></i>
+                          </div>
+                            <div id="main__mute_button" onclick="muteUnmute()"
+                                 class="btn option-btn  rounded-circle ">
+                              <i  class="fas fa-microphone"></i>
+                            </div>
+                            <div 
+                              onclick="playStop()"
+                              class="btn option-btn  rounded-circle "
+                              id="main__video_button"
+                            >
+                              <i class="fas fa-video"></i>
+                            </div>
+                            <a  href="/" class="btn option-btn end-call rounded-circle ">
+                              <i class="fa fa-phone-alt"></i>
+                            </a>
+                            <a  href="/" class="btn option-btn screen-share rounded-circle" target="_blank">
+                              <i class="fa fa-desktop"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="col-md-3 shadow bg-black-dark">
+                <div class="row message-block p-4 ">
+                    <div class="col-md-12 px-0">
+                        <h1 class="display-5 p-2 text-center text-white font-weight-light">Chats</h1>
+                        <!-- CHAT SECTION -->
+                        <div id="messages" class=" mt-2   rounded ">
+                            
+                          
+                           <!-- <div class="msg-reciever">
+                            <div class="name">
+                              Qazi Amaan
+                            </div>
+                              <div class="msg">
+                                Regardless how much text is in the p I want to stick the
+                              </div>
+                           </div>
+                          <div class="helper ">
+                              Qazi Amaan joined
+                          </div>
+                           <div class="msg-sender">
+                            <div class="msg">
+                                Regardless how much text is in the p I want to stick the
+                            </div>
+                          </div> -->
+
+                           
+                           
+                           
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 p-1 message-send  rounded bg-dark">
+                        <textarea id="mesage-input" type="text" placeholder="Type a message or clear"
+                        class="bg-dark text-white border-0 form-control form-control-lg"></textarea>
+                    </div>
+                </div>
+              </div>
+          </div>
+      </div>
+  </body>
+</html>

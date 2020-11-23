@@ -1,0 +1,174 @@
+.bg-black-dark{
+    background-color: #322f3d;
+}
+.bg-black{
+    background-color: #000;
+}
+
+textarea {
+flex: 1;
+background: #343a40;
+width: 100%;
+padding: 0 ;
+overflow: hidden;
+height: 42px !important;
+}
+
+textarea:focus {
+color: #fff;
+background-color: #343a40 !important;
+outline: none;
+box-shadow: none;
+border-color:#59405c;
+border: none !important  ;
+} 
+
+textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {   
+  border-color: #000 !important;
+  box-shadow: 0 0px 0px rgba(229, 103, 23, 0.075) inset, 0 0 0px #000 !important;
+  outline: 0 none !important;
+}
+
+.message-block{
+height: 100vh;
+display: flex;
+flex-direction: row;  
+}
+
+.message-block >.message-send{
+margin-top: auto;
+}
+.message-block >.messages{
+margin-bottom: auto;
+}
+#messages{
+margin-top: 10px !important;
+max-height: 48em;
+ overflow-y: auto;
+}
+
+#messages::-webkit-scrollbar ,.video .other-users-video::-webkit-scrollbar  {
+display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+#messages,.video .other-users-video {
+-ms-overflow-style: none;  /* IE and Edge */
+scrollbar-width: none;  /* Firefox */
+} 
+
+.msg-reciever{
+margin-bottom: 12px;
+
+display:flex;
+flex-direction: column;
+justify-content: space-between;
+width: 100%;
+color:#fff;
+
+}
+.msg-reciever .msg{
+margin-bottom: 5px;
+max-width: 90%;
+border-radius: 8px;
+padding: 15px !important;
+background: #4b5d67 !important;
+font-size: 13px;
+}
+
+.msg-reciever .name{
+float: left;
+font-size: 10px;
+}
+
+.msg-sender{
+margin-bottom: 12px;
+width: 100%;
+}
+.msg-sender .msg{
+color:#fff;
+max-width: 90%;
+
+float: right;
+border-radius: 8px;
+padding: 15px !important;
+background: #59405c !important;
+font-size: 13px;
+}
+
+.video-block{
+position: relative;
+}
+.video-block .video-options{
+position: absolute;
+bottom: 100px;
+}
+
+.option-btn{
+color: #4b5d67 ;
+height: 15px !important;
+width: 15px !important;
+margin-right: 45px;
+}
+.option-btn >i{
+font-size: 30px !important;
+}
+.option-btn:hover{
+color: #fff !important;
+}
+.end-call:hover{
+color: #CC3B33 !important;
+}
+
+
+.video{
+position: relative;
+}
+.video .other-users-video{
+z-index: 999;
+position: absolute;
+width: 250px;
+right: 10px;
+height: 55rem;
+overflow-y: auto;
+height: 100% !important;
+}
+
+.other-users-video .single-user .card-img{
+width: 250px;
+height: 150px;
+}
+.card{
+border: none !important;
+margin-bottom: 2px !important;
+}
+
+.main-video{
+width: 100%;
+position: relative;
+height: 59rem;
+object-fit: cover;
+}
+.video-container{
+position: absolute;
+top:0;
+right: 0;
+margin-right: 20px;
+margin-top: 20px;
+width: 250px;
+}
+
+.other-users-video .single-user .option-btn >i{
+font-size: 20px !important;
+
+}
+.helper{
+text-align: center;
+margin-bottom: 12px;
+size: 10px;
+color: rgb(202, 191, 172) !important;
+}
+
+.user-small-video{
+  object-fit: cover;
+}
