@@ -100,7 +100,7 @@ font-size: 13px;
 position: relative;
 }
 .video-block .video-options{
-position: absolute;
+position: fixed;
 bottom: 100px;
 }
 

@@ -4,7 +4,7 @@ let myVideoStream;
 const myVideo = document.getElementById('my-video')
 if(myVideo != null) myVideo.muted = true;
 const chat_messages = document.getElementById('messages')
-const peers = {}
+let peers = {}
 const currentUserId = "";
 var pathArray = window.location.pathname.split('/');
 type=pathArray[2]
@@ -24,8 +24,8 @@ if(type=="screen"){
       const video = document.createElement('video')
       call.on('stream', (userVideoStream) => {
         addVideoStream(myVideo, stream)
-        addchildVideoStream("User", video, userVideoStream)
-
+        console.log(userVideoStream, myPeer._id);
+        addchildVideoStream(myPeer._id, video, userVideoStream)
       })
 
       call.on('close', () => {
@@ -99,8 +99,8 @@ if(type=="screen"){
           const video = document.createElement('video')
           call.on('stream', (userVideoStream) => {
             addVideoStream(myVideo, stream)
-            addchildVideoStream("User", video, userVideoStream)
-
+            console.log(userVideoStream, myPeer._id);
+            addchildVideoStream(myPeer._id, video, userVideoStream)
           })
 
           call.on('close', () => {
@@ -108,7 +108,6 @@ if(type=="screen"){
           })
         
         })
-
         let text = $("#mesage-input");
   $('#mesage-input').keydown(function (e) {
     if (e.which == 13 && text.val().length !== 0) {
@@ -144,7 +143,7 @@ if(type=="screen"){
   socket.on('user-disconnected', userId => {
     if (peers[userId]) {
       postAboutpeer(`${userId} left the room`);
-      document.getElementById('peer-'+userId).remove();
+      document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log("Video element doesn't exist for "+userId);;
       peers[userId].close()
     }else{
       postAboutpeer(`${userId} left the room`);
@@ -168,7 +167,6 @@ function connectToNewUser(userId, stream) {
   call.on('stream', userVideoStream => {
     addVideoStream(myVideo, stream)
     addchildVideoStream(userId, video, userVideoStream)
-
   })
   call.on('close', () => {
     video.remove()

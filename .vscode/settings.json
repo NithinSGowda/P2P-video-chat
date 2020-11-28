@@ -1,4 +1,4 @@
 {
     "appService.deploySubpath": ".",
-    "appService.defaultWebAppToDeploy": "/subscriptions/365820d6-9f27-4030-9f79-2c67ad2145c6/resourceGroups/DefaultResourceGroup-CAU/providers/Microsoft.Web/sites/p2pcall"
+    "appService.defaultWebAppToDeploy": "/subscriptions/365820d6-9f27-4030-9f79-2c67ad2145c6/resourceGroups/cloud-shell-storage-centralindia/providers/Microsoft.Web/sites/p2pcall"
 }
