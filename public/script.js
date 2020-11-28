@@ -9,11 +9,17 @@ const currentUserId = "";
 var pathArray = window.location.pathname.split('/');
 type=pathArray[2]
 
+var peerUpdateInterval = setInterval(()=>{
+  if(myPeer){
+    updateDB()
+    clearInterval(peerUpdateInterval)
+  }
+},500)
+
+
 if(type=="screen"){
   navigator.mediaDevices.getDisplayMedia({
-    video: {
-      cursor: "always"
-    },
+    video: true,
     audio: true
   }).then(stream => {
     myVideoStream = stream;
@@ -29,7 +35,7 @@ if(type=="screen"){
       })
 
       call.on('close', () => {
-        video.remove()
+        video.parentElement.remove()
       })
     
     })
@@ -48,32 +54,48 @@ if(type=="screen"){
     });
 
     socket.on("createMessage", (message,userId) => {
-      var msg_reciever = document.createElement('div');
-      msg_reciever.className='msg-reciever';
-      var name = document.createElement('div');
-      name.className='name';
-      var msg = document.createElement('div');
-      msg.className='msg';
-      msg_reciever.appendChild(name);
-      name.innerHTML=userId;
-      msg_reciever.appendChild(msg);
-      msg.innerHTML=message;
-      document.getElementById('messages').appendChild(msg_reciever);
+      fetch("http://localhost:8080/user/"+userId)
+        .then(response => response.text())
+        .then(result => {
+          console.log(JSON.parse(result));
+          var msg_reciever = document.createElement('div');
+          msg_reciever.className='msg-reciever';
+          var name = document.createElement('div');
+          name.className='name';
+          var msg = document.createElement('div');
+          msg.className='msg';
+          msg_reciever.appendChild(name);
+          name.innerHTML=JSON.parse(result)[0].name;
+          msg_reciever.appendChild(msg);
+          msg.innerHTML=message;
+          document.getElementById('messages').appendChild(msg_reciever);
+        })
+        .catch(error => console.log('error', error));
     })
     socket.on('user-connected', userId => {
-      postAboutpeer(`${userId} joined the room`);
-      connectToNewUser(userId, myVideoStream)
+      fetch("http://localhost:8080/user/"+userId)
+        .then(response => response.text())
+        .then(result => {
+          postAboutpeer(`${JSON.parse(result)[0].name} joined the room`);
+          connectToNewUser(userId, myVideoStream)
+        })
+        .catch(error => console.log('error', error));
     })
 
     socket.on('user-disconnected', userId => {
-      if (peers[userId]) {
-        postAboutpeer(`${userId} left the room`);
-        document.getElementById('peer-'+userId).remove();
-        peers[userId].close()
-      }else{
-        postAboutpeer(`${userId} left the room`);
-        document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log("Peer already removed");
-      }
+      fetch("http://localhost:8080/user/"+userId)
+        .then(response => response.text())
+        .then(result => {
+          if (peers[userId]) {
+            postAboutpeer(`${JSON.parse(result)[0].name} left the room`);
+            document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log(JSON.parse(result)[0].name+" was already removed");
+            peers[userId].close()
+          }else{
+            postAboutpeer(`${JSON.parse(result)[0].name} left the room`);
+            document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log(JSON.parse(result)[0].name+" already removed");
+          }
+        })
+        .catch(error => console.log('error', error));
     })
 
     myPeer.on('open', id => {
@@ -104,7 +126,7 @@ if(type=="screen"){
           })
 
           call.on('close', () => {
-            video.remove()
+            video.parentElement.remove()
           })
         
         })
@@ -122,33 +144,49 @@ if(type=="screen"){
   });
 
   socket.on("createMessage", (message,userId) => {
-      var msg_reciever = document.createElement('div');
-      msg_reciever.className='msg-reciever';
-      var name = document.createElement('div');
-      name.className='name';
-      var msg = document.createElement('div');
-      msg.className='msg';
-      msg_reciever.appendChild(name);
-      name.innerHTML=userId;
-      msg_reciever.appendChild(msg);
-      msg.innerHTML=message;
-      document.getElementById('messages').appendChild(msg_reciever);
+    fetch("http://localhost:8080/user/"+userId)
+      .then(response => response.text())
+      .then(result => {
+        // console.log(JSON.parse(result));
+        var msg_reciever = document.createElement('div');
+        msg_reciever.className='msg-reciever';
+        var name = document.createElement('div');
+        name.className='name';
+        var msg = document.createElement('div');
+        msg.className='msg';
+        msg_reciever.appendChild(name);
+        name.innerHTML=JSON.parse(result)[0].name;
+        msg_reciever.appendChild(msg);
+        msg.innerHTML=message;
+        document.getElementById('messages').appendChild(msg_reciever);
+      })
+      .catch(error => console.log('error', error));
   })
 
   socket.on('user-connected', userId => {
-    postAboutpeer(`${userId} joined the room`);
-    connectToNewUser(userId, myVideoStream)
+    fetch("http://localhost:8080/user/"+userId)
+        .then(response => response.text())
+        .then(result => {
+          postAboutpeer(`${JSON.parse(result)[0].name} joined the room`);
+          connectToNewUser(userId, myVideoStream)
+        })
+        .catch(error => console.log('error', error));
   })
   
   socket.on('user-disconnected', userId => {
-    if (peers[userId]) {
-      postAboutpeer(`${userId} left the room`);
-      document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log("Video element doesn't exist for "+userId);;
-      peers[userId].close()
-    }else{
-      postAboutpeer(`${userId} left the room`);
-      document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log("Peer already removed");
-    }
+    fetch("http://localhost:8080/user/"+userId)
+      .then(response => response.text())
+      .then(result => {
+        if (peers[userId]) {
+          postAboutpeer(`${JSON.parse(result)[0].name} left the room`);
+          document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log(JSON.parse(result)[0].name+" was already removed");
+          peers[userId].close()
+        }else{
+          postAboutpeer(`${JSON.parse(result)[0].name} left the room`);
+          document.getElementById('peer-'+userId) ? document.getElementById('peer-'+userId).remove() : console.log(JSON.parse(result)[0].name+" already removed");
+        }
+      })
+      .catch(error => console.log('error', error));
   })
   
   myPeer.on('open', id => {
@@ -169,7 +207,7 @@ function connectToNewUser(userId, stream) {
     addchildVideoStream(userId, video, userVideoStream)
   })
   call.on('close', () => {
-    video.remove()
+    video.parentElement.remove()
   })
   peers[userId] = call
 }
@@ -198,32 +236,36 @@ function addchildVideoStream(userId,video, stream) {
 
   var card_overlay = document.createElement('div');
   card_overlay.className="card-img-overlay";
-  
-  var card_title = document.createElement('div');
-  card_title.className="card-title";
-  card_title.innerHTML=userId;
 
-  var show_view = document.createElement('div');
-  show_view.className="show_view mt-5";
-  
-  var option_btn = document.createElement('div');
-  option_btn.className="btn option-btn  rounded-circle";
-  
+  fetch("http://localhost:8080/user/"+userId)
+  .then(response => response.text())
+  .then(result => {
+    var card_title = document.createElement('div');
+    card_title.className="card-title";
+    card_title.innerHTML=JSON.parse(result)[0].name;
+    var show_view = document.createElement('div');
+    show_view.className="show_view mt-5";
+    
+    var option_btn = document.createElement('div');
+    option_btn.className="btn option-btn  rounded-circle";
+    
 
-  var i = document.createElement('i');
-  i.className="fa fa fa-expand expand-btn";
+    var i = document.createElement('i');
+    i.className="fa fa fa-expand expand-btn";
 
-  const host = document.createAttribute('onclick')
-  host.value = `expand_to_screen('peerscreen-${userId}')`;
-  i.setAttributeNode(host);
+    const host = document.createAttribute('onclick')
+    host.value = `expand_to_screen('peerscreen-${userId}')`;
+    i.setAttributeNode(host);
 
-  card.appendChild(video);
-  var card_child_append = card.appendChild(card_overlay);
-  card_child_append.appendChild(card_title);
-  card_child_append.appendChild(show_view).appendChild(option_btn).appendChild(i);
+    card.appendChild(video);
+    var card_child_append = card.appendChild(card_overlay);
+    card_child_append.appendChild(card_title);
+    card_child_append.appendChild(show_view).appendChild(option_btn).appendChild(i);
 
 
-  document.getElementById('other-users-video').append(card)
+    document.getElementById('other-users-video').append(card)
+  })
+  .catch(error => console.log('error', error));
 }
 function postAboutpeer(msg){
   var newUser = document.createElement('div');
@@ -325,4 +367,22 @@ const setPlayVideo = () => {
 
 function d(msg){
   console.log(msg)
+}
+
+function updateDB(){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  var raw = JSON.stringify({"name":localStorage.getItem("name"),"peerId":myPeer._id});
+  var requestOptions={
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  fetch("http://localhost:8080/user/add", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
 }

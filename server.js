@@ -1,15 +1,19 @@
 const express = require('express')
 const app = express()
+const path = require('path')
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
+var dbRouter = require('./routes/db');
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
+app.use('/user', dbRouter);
+app.use(express.static(path.join(__dirname+"/views")));
 
 app.get('/', (req, res) => {
-    res.render('landing')
+    res.render('index')
   })
 
 app.get('/create-new-room', (req, res) => {
