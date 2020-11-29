@@ -4,18 +4,40 @@ let myVideoStream;
 const myVideo = document.getElementById('my-video')
 if(myVideo != null) myVideo.muted = true;
 const chat_messages = document.getElementById('messages')
-let peers = {}
+var peers = {}
 const currentUserId = "";
 var pathArray = window.location.pathname.split('/');
 type=pathArray[2]
+const API_URL="http://localhost:8080"
+// const API_URL="https://nchat.ml"
+// const API_URL="https://p2pcall.azurewebsites.net"
 
 var peerUpdateInterval = setInterval(()=>{
-  if(myPeer){
+  if(myPeer._id){
     updateDB()
     clearInterval(peerUpdateInterval)
   }
-},500)
+},50)
 
+function updateDB(){
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  console.log(myPeer._id);
+  var raw = JSON.stringify({"name":localStorage.getItem("name") ? localStorage.getItem("name") : "Anonymous","peerId":myPeer._id});
+  var requestOptions={
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+  };
+
+  fetch(API_URL+"/user/add", requestOptions)
+    .then(response => response.text())
+    .then(result => ()=>{
+      answered = true
+    })
+    .catch(error => console.log('error', error));
+}
 
 if(type=="screen"){
   navigator.mediaDevices.getDisplayMedia({
@@ -30,8 +52,9 @@ if(type=="screen"){
       const video = document.createElement('video')
       call.on('stream', (userVideoStream) => {
         addVideoStream(myVideo, stream)
-        console.log(userVideoStream, myPeer._id);
-        addchildVideoStream(myPeer._id, video, userVideoStream)
+        console.log(call.peer);
+        peers[call.peer]=call
+        addchildVideoStream(call.peer, video, userVideoStream)
       })
 
       call.on('close', () => {
@@ -54,7 +77,7 @@ if(type=="screen"){
     });
 
     socket.on("createMessage", (message,userId) => {
-      fetch("http://localhost:8080/user/"+userId)
+      fetch(API_URL+"/user/"+userId)
         .then(response => response.text())
         .then(result => {
           console.log(JSON.parse(result));
@@ -65,7 +88,7 @@ if(type=="screen"){
           var msg = document.createElement('div');
           msg.className='msg';
           msg_reciever.appendChild(name);
-          name.innerHTML=JSON.parse(result)[0].name;
+          name.innerHTML=JSON.parse(result)[0].name ? JSON.parse(result)[0].name : "Anonymous";
           msg_reciever.appendChild(msg);
           msg.innerHTML=message;
           document.getElementById('messages').appendChild(msg_reciever);
@@ -73,7 +96,7 @@ if(type=="screen"){
         .catch(error => console.log('error', error));
     })
     socket.on('user-connected', userId => {
-      fetch("http://localhost:8080/user/"+userId)
+      fetch(API_URL+"/user/"+userId)
         .then(response => response.text())
         .then(result => {
           postAboutpeer(`${JSON.parse(result)[0].name} joined the room`);
@@ -83,7 +106,7 @@ if(type=="screen"){
     })
 
     socket.on('user-disconnected', userId => {
-      fetch("http://localhost:8080/user/"+userId)
+      fetch(API_URL+"/user/"+userId)
         .then(response => response.text())
         .then(result => {
           if (peers[userId]) {
@@ -121,8 +144,9 @@ if(type=="screen"){
           const video = document.createElement('video')
           call.on('stream', (userVideoStream) => {
             addVideoStream(myVideo, stream)
-            console.log(userVideoStream, myPeer._id);
-            addchildVideoStream(myPeer._id, video, userVideoStream)
+            console.log(call.peer);
+            peers[call.peer]=call
+            addchildVideoStream(call.peer, video, userVideoStream)
           })
 
           call.on('close', () => {
@@ -144,7 +168,7 @@ if(type=="screen"){
   });
 
   socket.on("createMessage", (message,userId) => {
-    fetch("http://localhost:8080/user/"+userId)
+    fetch(API_URL+"/user/"+userId)
       .then(response => response.text())
       .then(result => {
         // console.log(JSON.parse(result));
@@ -155,7 +179,7 @@ if(type=="screen"){
         var msg = document.createElement('div');
         msg.className='msg';
         msg_reciever.appendChild(name);
-        name.innerHTML=JSON.parse(result)[0].name;
+        name.innerHTML=JSON.parse(result)[0].name ? JSON.parse(result)[0].name : "Anonymous";
         msg_reciever.appendChild(msg);
         msg.innerHTML=message;
         document.getElementById('messages').appendChild(msg_reciever);
@@ -164,7 +188,7 @@ if(type=="screen"){
   })
 
   socket.on('user-connected', userId => {
-    fetch("http://localhost:8080/user/"+userId)
+    fetch(API_URL+"/user/"+userId)
         .then(response => response.text())
         .then(result => {
           postAboutpeer(`${JSON.parse(result)[0].name} joined the room`);
@@ -174,7 +198,7 @@ if(type=="screen"){
   })
   
   socket.on('user-disconnected', userId => {
-    fetch("http://localhost:8080/user/"+userId)
+    fetch(API_URL+"/user/"+userId)
       .then(response => response.text())
       .then(result => {
         if (peers[userId]) {
@@ -215,6 +239,9 @@ function connectToNewUser(userId, stream) {
 
 function addVideoStream(video, stream) {
   video.srcObject= stream;
+  video.srcObject.onremovetrack=()=>{
+    console.log("Left the room");
+    video.parentElement.remove()}
   // video.srcObject = stream
   video.addEventListener('loadedmetadata', () => {
     video.play()
@@ -224,6 +251,10 @@ function addVideoStream(video, stream) {
 
 function addchildVideoStream(userId,video, stream) {
   video.srcObject= stream;
+  video.srcObject.onremovetrack=()=>{
+    console.log("Left the room");
+    video.parentElement.remove()}
+
   video.id=`peerscreen-${userId}`;
   video.className="user-small-video card-img bg-black-dark";
   video.addEventListener('loadedmetadata', () => {
@@ -237,7 +268,7 @@ function addchildVideoStream(userId,video, stream) {
   var card_overlay = document.createElement('div');
   card_overlay.className="card-img-overlay";
 
-  fetch("http://localhost:8080/user/"+userId)
+  fetch(API_URL+"/user/"+userId)
   .then(response => response.text())
   .then(result => {
     var card_title = document.createElement('div');
@@ -281,7 +312,7 @@ document.getElementById('expand-main').addEventListener('click',()=>{
   expand(document.getElementById('my-video'));
 });
 document.getElementById('cpy-link-btn').addEventListener('click',()=>{
-  document.getElementById("shareable-cpy-link").value="aselpanda.ml/"+ROOM_ID;
+  document.getElementById("shareable-cpy-link").value="https://nchat.ml/"+ROOM_ID;
   $('#cpy-link-model').css('display','block')
 })
 document.getElementById('close-model-btn').addEventListener('click',()=>{
@@ -367,22 +398,4 @@ const setPlayVideo = () => {
 
 function d(msg){
   console.log(msg)
-}
-
-function updateDB(){
-  var myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  var raw = JSON.stringify({"name":localStorage.getItem("name"),"peerId":myPeer._id});
-  var requestOptions={
-    method: 'POST',
-    headers: myHeaders,
-    body: raw,
-    redirect: 'follow'
-  };
-
-  fetch("http://localhost:8080/user/add", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
 }

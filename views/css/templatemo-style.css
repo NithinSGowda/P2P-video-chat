@@ -133,7 +133,7 @@ p {
 .footer-link {
     margin: 20px;
 	font-size: 18px;
-    position: relative;
+    position: absolute;
     bottom: 0;
     left: 0;
     color: white;
@@ -253,5 +253,5 @@ p {
 }
 
 .blocks{
-    padding-left: 90px;
+    padding-left: 50px;
 }
