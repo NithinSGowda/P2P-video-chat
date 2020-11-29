@@ -8,9 +8,11 @@ var peers = {}
 const currentUserId = "";
 var pathArray = window.location.pathname.split('/');
 type=pathArray[2]
-const API_URL="http://localhost:8080"
-// const API_URL="https://nchat.ml"
+// const API_URL="http://localhost:8080"
+const API_URL="https://nchat.ml"
 // const API_URL="https://p2pcall.azurewebsites.net"
+
+console.log(ROOM_ID+" joined");
 
 var peerUpdateInterval = setInterval(()=>{
   if(myPeer._id){
@@ -45,9 +47,11 @@ if(type=="screen"){
     audio: true
   }).then(stream => {
     myVideoStream = stream;
+    console.log("line 50",stream, myPeer);
     addVideoStream(myVideo, myVideoStream)
 
     myPeer.on('call', (call) => {
+      console.log("line 54",call);
       call.answer(stream)
       const video = document.createElement('video')
       call.on('stream', (userVideoStream) => {
@@ -138,11 +142,13 @@ if(type=="screen"){
     .then(stream => {
         myVideoStream = stream;
         addVideoStream(myVideo, myVideoStream)
+        console.log("line 145",stream, myPeer);
 
         myPeer.on('call', (call) => {
           call.answer(stream)
           const video = document.createElement('video')
           call.on('stream', (userVideoStream) => {
+            console.log(call,"line 151");
             addVideoStream(myVideo, stream)
             console.log(call.peer);
             peers[call.peer]=call
