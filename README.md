@@ -14,11 +14,6 @@ This project was developed with [Peer JS][NodeJs] [SocketIO].
 
 Run `npm start` or `nodemon server.js` to start the server Then  Navigate to `http://localhost:8080/` or  `https://nchat.ml/` (which is locally hosted). The app will start loading and you can join any room and start a conference in a secure environment.
 
-## Screenshots
-
-### Room Page
-<img src="/ss/2.png"></img>
-
 ## Features
 1. Decentralised Servers 
 2. Live chat (connection oriented) can support multiple users
